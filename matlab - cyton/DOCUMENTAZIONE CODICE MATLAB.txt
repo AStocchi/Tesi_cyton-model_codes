@@ -1,0 +1,73 @@
+FILE DI DOCUMENTAZIONE DEL CODICE:
+
+Implementazione_v1:	 (run standalone) [NON IN USO]
+	Prima prova di implementazione del cyton model -guardare dentro per vedere i dettagli NON RICORDO-
+
+Implementazione_v2:	 (run standalone) [NON IN USO]
+	Raffinamento dell'implementazione del cyton model -guardare dentro per vedere i dettagli NON RICORDO-
+
+Prova_distrib:	 (run standalone) [NON IN USO]
+	Codice che plotta i dati di una distribuzione (in particolare Log-Normal) a partire dai parametri media e varianza forniti [utile per vedere come sono fatte delle distribuzioni trovate o ipotizzate]
+
+Prova_gamma:	 (run standalone) [NON IN USO]
+	Codice che stampa i valori di gamma_i ottenuti come indicato nel paper cyton-2011 (rapporto di integrali di normali) a partire dai parametri forniti
+
+Prova_lettura_dati:	 (run standalone) [NON IN USO]
+	Prima prova di lettura dei dati presenti nel paper cyton-2011 dai file .csv
+
+Main_fitting:	 (run MAIN -> guardare immagine STRUTTURA CODICE)
+	Codice main che lancia una grid-search sui parametri mu, sigma, gamma_0 (possibilità di scegliere tra più configurazioni di grid-search o di aggiungerne di nuove), la grid-search è su 7 parametri (3 distrib. + gamma_0) [distribuzioni generate: divisione_gen_0, divisione_gen_1:8, morte_gen_0:8]
+	Per ogni configurazione di parametri simula il cyton model corrispondente e valuta la sua "distanza/errore" dai dati originali
+
+Fun_lettura_dati:	(funzione -> guardare immagine STRUTTURA CODICE)
+	Versione richiamabile di Prova_lettura_dati, quindi legge i dati del paper cyton-2011 dai file .csv
+
+Fun_cyton_per_fit:	(funzione -> guardare immagine STRUTTURA CODICE) [DEPRECATA]
+	Versione richiamabile di Implementazione_v2, quindi permette di simulare una versione del cyton model a partire dai parametri forniti (lavora con i 7 parametri passati da Main_fitting)
+
+Copy_of_Fun_cyton_per_fit:	(funzione -> guardare immagine STRUTTURA CODICE)
+	Miglioramento di Fun_cyton_per_fit [usare Copy_of_... a meno di necessità particolari], ora la simulazione dell'intero cyton model non è più sull'intero dominio delle distribuzioni (1440h circa) ma solo sulla parte osservabile dello sviluppo cellulare (360 h circa -> 15 gg.), questo velocizza enormemente la funzione (si simula solo ciò che verrà effettivamente valutato con i dati a disposizione)
+
+Fun_evaluation_fit:	(funzione -> guardare immagine STRUTTURA CODICE)
+	Funzione che legge i dati forniti e il segnale del cyton simulato (ottenuto dalle funzioni ..._cyton_per_fit) e valuta la differenza tra i due segnali usando una funzione di errore [inizialmente provato funzione di distanza lineare, valore assoluto (abs) della differenza tra i due segnali, poi distanza al quadrato, poi esponenziale del abs della distanza, poi distanza*5 al quadrato, infine distanza*20 al quadrato]. Il confronto avviene tra i punti dati (tempo, num_cells) e il più vicino (in termini di tempo) punto simulato (tempo_più_vicino_possibile_simulato, num_cells_simulato).
+
+fsigm:	(funzione) [MAI EFFETTIVAMENTE USATA]
+	Tentativo di implementazione di utilizzo di una funzione sigmoide per la valutazione dell'errore tra segnale simulato e dati (sarebbe dovuta essere richiamata da Fun_evaluation_fit)
+
+Search_fitting:		(run MAIN -> guardare immagine STRUTTURA CODICE) [NON IN USO]
+	Codice main con la stessa struttura di richiami di Main_fitting ma che differentemente esegue un'ottimizzazione del modello (cercando di avvicinare i risultati della simulazione ai dati), questo avviene con dei passi randomici nello spazio dei parametri, la simulazione e la valutazione del nuovo modello, se quest'ultimo risulta migliore, lo si salva e si continua ad ottimizzare, altrimenti lo si scarta e si riparte dal passo precedente. (L'ottimizzazione avviene per un unico punto iniziale) [Ora uso questo codice più che altro per la visualizzazione dei modelli ottenuti da Search_fitting_v2] 
+
+Search_fitting_v2:	(run MAIN -> guardare immagine STRUTTURA CODICE)
+	Codice main, evoluzione di Search_fitting, che esegue l'ottimizzazione di cui sopra ma su un set di starting points anzichè uno solo
+
+Prova_visualize_result: 	(funzione -> guardare immagine STRUTTURA CODICE)
+	Funzione da lanciare dopo Search_fitting_v2 o _v3 o _v4  che plotta gli andamenti dello score di ciascuna configurazione durante l'ottimizzazione e salva inoltre il miglior punto ottenuto per ogni run in una matrice (per le varie versioni bisogna aggiornare il codice inserendo la lunghezza corretta di m_score11 [8 10 20] rispettivamente)
+
+Search_fitting_v3:	(run MAIN -> guardare immagine STRUTTURA CODICE)
+	Codice main che espande Search_fitting_v2, ora l'ottimizzazione contiene 1 distribuzione ulteriore (2 parametri in più) -> la distribuzione morte viene divisa in morte_gen_0, morte_gen_1:8, con una struttura analoga a quella del processo di divisione
+
+Search_fitting_v4:	(run MAIN -> guardare immagine STRUTTURA CODICE)
+	Codice main, analogo agli altri Search_fitting_..., questa volta però l'ottimizzazione non si concentra sui parametri delle distribuzioni ma sui valori di gamma_i (partire da gamma_0). Questa procedura rappresenta una ricerca in uno spazio dei parametri "perpendicolare" a quello precedente (NON è quindi definibile come ricerca di un ottimo globale ma non era questo l'obiettivo)
+
+Copy_of_Fun_cyton_per_fit_v2:	(funzione -> guardare immagine STRUTTURA CODICE)
+	Funzione analoga a Copy_of_Fun_cyton_... che però simula il modello al variare dei gamma_i
+
+
+
+-----Cartella-- dati kajal
+
+Prova_tranform_pedigree_generation:	(run standalone)
+	Codice per ricostruire i dati di Kajal, creando a partire dai file ID.mat (contenenti -parte del- l'albero genealogico) per ogni pedigree un segnale del numero di cellule nel tempo, all'interno del codice c'è anche una seconda parte utile a unire i segnali di più pedigree insieme formando popolazioni nel tempo.
+
+Prova_campionamento_dati: 	(run standalone)
+	Codice per campionare i segnali ricostruiti, che altrimenti avrebbero troppi punti e questo potrebbe complicare il fitting (es. passo da 17528 time instant a 117 time instant)
+
+
+
+-----Cartella-- dati c_elegans
+
+Trasformazione_dati_raw:	(run standalone)
+	Codice per trasformare i dati della c_elegans mandati da Marcus da .xlsx a file .mat e organizzarli per generazioni
+
+
+ 

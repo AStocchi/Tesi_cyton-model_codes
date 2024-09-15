@@ -1,0 +1,31 @@
+CAMBIO SEGNALE DA FITTARE: Uso cyton_data presi da paper 2011
+
+MODIFICATO IL codice di Fun_evaluation_fit -> ora VALUTARE IL SEGNALE SOLO DOVE IL RIFERIMENTO è >0 (anzi >0.001)
+						-> azzero il valore dell'errore dove il segnale riferimento è <0.001
+
+Fatto Main_Fitting con 1 + 4 Grid search:
+
+SALVATO FILE .MAT CON I MIGLIORI DI OGNI GRID-SEARCH
+Creato File riassuntivo dei punti da cui fare partire la ricerca randomica dei fit: (35 migliori + 5 peggiori) per ogni file contenente i punti salvati dalle grid-search -> tot= 160 + 10 migliori della grid_search piccola
+
+
+
+Lancio Search_fitting_v2:
+
+%point 1
+
+
+
+Lancio Search_fitting_v3: (copiando i valori di media e varianza della morte degli starting point anche per morte-post-gen-0 -> copio colonne 2,3 in 8,9)
+
+%point 1
+
+
+
+Creo file con 50 best results v2 e 50 best results v3 
+
+
+
+Lancio Search_fitting_v4:
+
+%point 1
